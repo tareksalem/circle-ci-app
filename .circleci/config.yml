@@ -1,0 +1,37 @@
+version: 2.1
+
+jobs:
+  docker-build:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: "20.10.11"
+          docker_layer_caching: true
+      - run: docker build -t react-app:latest -f Dockerfile
+      - run: docker images
+      - run: docker save react-app:latest | gzip > react-app.tgz
+      - run: ls -a
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  deploy:
+    machine: true
+    steps:
+      - attach_workspace:
+          at: .
+      - run: ls -a
+
+workflows:
+  build-workflow:
+    jobs:
+      - docker-build
+      - deploy:
+          requires:
+            - "docker-build"
+
+
+
+# VS Code Extension Version: 1.5.1
