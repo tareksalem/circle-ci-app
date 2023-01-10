@@ -24,8 +24,13 @@ jobs:
       - attach_workspace:
           at: .
       - run: ls -a
-      # - run: |
-      #     server="$SSH_USER@$SSH_HOST"
+      - run: |
+          SERVER_HOST="$SSH_USER@$SSH_HOST"
+          WORK_DIR='/var/apps/react-app'
+          ssh $SERVER_HOST mkdir -p /var/apps/react-app
+          scp docker-compose.yml react-app.tgz $SERVER_HOST:$WORK_DIR
+          ssh $SERVER_HOST "docker ps && docker compose -f docker-compose.yml up -d"
+
 
 workflows:
   build-workflow:
