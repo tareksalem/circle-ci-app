@@ -9,7 +9,10 @@ jobs:
       - setup_remote_docker:
           version: "20.10.11"
           docker_layer_caching: true
+      - run: docker tag react-app:latest react-app:$CIRCLE_PREVIOUS_BUILD_NUM 2> /dev/null || true
       - run: docker build -t react-app:latest . -f Dockerfile
+      - run: docker images
+      - run: docker image rm react-app:$CIRCLE_PREVIOUS_BUILD_NUM 2> /dev/null || true
       - run: docker images
       - run: docker save react-app:latest | gzip > react-app.tgz
       - run: ls -a
